@@ -1,6 +1,52 @@
 <div class="card mb-4">
+  <div class="card-header">
+    <strong>Nueva Ciudad</strong>
+  </div>
+
   <div class="card-body">
-    <h5 class="card-title">Nueva Ciudad</h5>
-    <p class="text-muted">Formulario por implementar.</p>
+
+    <div *ngIf="loadingCountries" class="alert alert-info">
+      Cargando países...
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Nombre de la ciudad</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="cityName"
+        placeholder="Ej: Medellin"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">País</label>
+      <select class="form-select" [(ngModel)]="selectedCountryId">
+        <option [ngValue]="null">Seleccione un país</option>
+
+        <option
+          *ngFor="let country of countries"
+          [ngValue]="country.id"
+        >
+          {{ country.name }} - {{ country.isoCode }}
+        </option>
+      </select>
+    </div>
+
+    <button
+      class="btn btn-primary me-2"
+      [disabled]="formInvalid()"
+      (click)="save()"
+    >
+      Guardar
+    </button>
+
+    <button
+      class="btn btn-secondary"
+      (click)="cancelForm()"
+    >
+      Cancelar
+    </button>
+
   </div>
 </div>

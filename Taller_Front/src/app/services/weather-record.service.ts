@@ -1,19 +1,27 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { WeatherRecord } from '../models/weather-record.model';
+import { Observable, map } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
+import { environment } from '../../environments/environment';
+import { WeatherRecord } from '../models/weather-record';
+
+@Injectable({
+  providedIn: 'root'
+})
 export class WeatherRecordService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
 
   getRecords(cityId: number): Observable<WeatherRecord[]> {
-    return this.http.get<WeatherRecord[]>(`${this.apiUrl}/cities/${cityId}/weather-records`);
+    return this.http.get<WeatherRecord[]>(
+      `${environment.apiUrl}/cities/${cityId}/weather-records`
+    );
   }
 
-  saveRecord(cityId: number, record: { tempC: number; condition: string; humidity: number }): Observable<WeatherRecord> {
-    return this.http.post<WeatherRecord>(`${this.apiUrl}/cities/${cityId}/weather-records`, record);
+  createRecord(cityId: number, record: Partial<WeatherRecord>): Observable<WeatherRecord> {
+    return this.http.post<WeatherRecord>(
+      `${environment.apiUrl}/cities/${cityId}/weather-records`,
+      record
+    );
   }
 }

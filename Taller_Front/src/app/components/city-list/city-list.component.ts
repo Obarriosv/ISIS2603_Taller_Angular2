@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { City } from '../../models/city.model';
 import { CityService } from '../../services/city.service';
@@ -8,10 +9,11 @@ import { CityDetailComponent } from '../city-detail/city-detail.component';
 @Component({
   selector: 'app-city-list',
   standalone: true,
-  imports: [CityCreateComponent, CityDetailComponent],
+  imports: [CommonModule, CityCreateComponent, CityDetailComponent],
   templateUrl: './city-list.component.html'
 })
 export class CityListComponent implements OnInit {
+
   private cityService = inject(CityService);
 
   cities: City[] = [];
@@ -23,20 +25,34 @@ export class CityListComponent implements OnInit {
   }
 
   loadCities(): void {
-    this.cityService.getCities().subscribe(cities => this.cities = cities);
+    console.log('Intentando cargar ciudades...');
+
+    this.cityService.getCities().subscribe({
+      next: (cities: City[]) => {
+        console.log('Ciudades cargadas:', cities);
+        this.cities = cities;
+      },
+      error: (error) => {
+        console.error('Error cargando ciudades:', error);
+      }
+    });
   }
 
-  onSelectCity(city: City): void {
+  selectCity(city: City): void {
     this.selectedCity = city;
+  }
+
+  openCreateForm(): void {
+    this.showCreateForm = true;
+  }
+
+  closeCreateForm(): void {
     this.showCreateForm = false;
   }
 
-  onCityCreated(): void {
+  onCityCreated(city: City): void {
+    this.showCreateForm = false;
+    this.selectedCity = city;
     this.loadCities();
-    this.showCreateForm = false;
-  }
-
-  toggleCreateForm(): void {
-    this.showCreateForm = !this.showCreateForm;
   }
 }

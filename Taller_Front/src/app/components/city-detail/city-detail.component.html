@@ -1,59 +1,72 @@
-<div class="card mt-3">
+<div class="card mt-4">
   <div class="card-header">
-    <h5 class="mb-0">Detalle de Ciudad — {{ city.name }}, {{ city.country.name }}</h5>
+    <strong>Detalle de {{ city.name }}</strong>
   </div>
+
   <div class="card-body">
+    <p>
+      <strong>País:</strong> {{ city.country.name }}
+    </p>
 
-    <!-- TODO HU-03: Muestra un spinner mientras se carga el clima (usa la propiedad loading) -->
+    <hr>
 
-    <!-- TODO HU-03: Muestra los datos de clima cuando estén disponibles:
-    - Temperatura: weatherDetail.temp_c °C
-    - Condición: weatherDetail.condition
-    - Humedad: weatherDetail.humidity %
-    -->
+    <h4>Clima actual</h4>
 
-    <!-- TODO HU-03: Muestra un mensaje "No hay datos de clima disponibles" cuando no haya datos -->
+    <div *ngIf="loadingWeather" class="alert alert-info">
+      Cargando clima...
+    </div>
 
-    <p class="text-muted mb-0">Clima no disponible.</p>
+    <div *ngIf="!loadingWeather && weatherDetail" class="alert alert-success">
+      <p><strong>Temperatura:</strong> {{ weatherDetail.temp_c }} °C</p>
+      <p><strong>Condición:</strong> {{ weatherDetail.condition }}</p>
+      <p><strong>Humedad:</strong> {{ weatherDetail.humidity }}%</p>
 
-  </div>
-</div>
+      <button
+        class="btn btn-primary"
+        [disabled]="savingWeather"
+        (click)="saveWeather()"
+      >
+        Guardar Clima Actual
+      </button>
+    </div>
 
-<div class="card mt-3">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Historial de Clima</h5>
-    <button class="btn btn-sm btn-primary" (click)="saveWeather()">Guardar Clima Actual</button>
-  </div>
-  <div class="card-body p-0">
+    <div *ngIf="!loadingWeather && !weatherDetail" class="alert alert-warning">
+      No hay datos de clima disponibles
+    </div>
 
-    @if (weatherRecords.length === 0) {
-      <div class="p-3">
-        <p class="text-muted mb-0">No hay registros de clima para esta ciudad.</p>
-      </div>
-    }
+    <hr>
 
-    @if (weatherRecords.length > 0) {
-      <table class="table table-sm table-striped mb-0">
-        <thead class="table-dark">
-          <tr>
-            <th>Fecha y Hora</th>
-            <th>Temp (°C)</th>
-            <th>Condición</th>
-            <th>Humedad (%)</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (r of weatherRecords; track r) {
-            <tr>
-              <td>{{ r.recordedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ r.tempC }}</td>
-              <td>{{ r.condition }}</td>
-              <td>{{ r.humidity }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    }
+    <h4>Historial de registros de clima</h4>
 
+    <div *ngIf="loadingRecords" class="alert alert-info">
+      Cargando historial...
+    </div>
+
+    <div *ngIf="!loadingRecords && weatherRecords.length === 0" class="alert alert-secondary">
+      No hay registros de clima para esta ciudad.
+    </div>
+
+    <table
+      class="table table-bordered table-striped"
+      *ngIf="!loadingRecords && weatherRecords.length > 0"
+    >
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Temperatura</th>
+          <th>Condición</th>
+          <th>Humedad</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let record of weatherRecords">
+          <td>{{ record.recordedAt | date:'short' }}</td>
+          <td>{{ record.tempC }} °C</td>
+          <td>{{ record.condition }}</td>
+          <td>{{ record.humidity }}%</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
